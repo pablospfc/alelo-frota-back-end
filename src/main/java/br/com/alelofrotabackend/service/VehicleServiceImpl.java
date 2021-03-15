@@ -1,6 +1,8 @@
 package br.com.alelofrotabackend.service;
 
 import br.com.alelofrotabackend.entity.Vehicle;
+import br.com.alelofrotabackend.entity.dto.VehicleDTO;
+import br.com.alelofrotabackend.exceptions.NoPermissionUpdateVehicle;
 import br.com.alelofrotabackend.exceptions.ResourceExistsException;
 import br.com.alelofrotabackend.exceptions.ResourceNotFoundException;
 import br.com.alelofrotabackend.repository.VehicleRepository;
@@ -41,14 +43,16 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public Vehicle update(Vehicle vehicle) throws ResourceNotFoundException {
+    public Vehicle update(Vehicle vehicle) throws ResourceNotFoundException, NoPermissionUpdateVehicle {
         Vehicle ve = vehicleRepository.getById(vehicle.getId());
 
         if (ve == null) {
             throw new ResourceNotFoundException("Veículo não encontrado");
         }
 
-        //if (vehicle.getPlate() != null || vehicle.getPlate())
+        if (ve.getPlate().equals(vehicle.getPlate())) {
+            throw new NoPermissionUpdateVehicle("Operação não permitoda. Não é possível modificar a placa do veículo");
+        }
 
         return vehicleRepository.save(vehicle);
     }
